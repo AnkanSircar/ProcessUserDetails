@@ -1,9 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
-using swm.core.consoleapp.Model;
+
 
 namespace swm.core.consoleapp
 {
@@ -32,42 +30,35 @@ namespace swm.core.consoleapp
             Console.ReadKey();
         }
 
-        private static List<UserDetail> ExtractUserDetails(string path)
+        private static List<swm.core.Contract.UserDetail> ExtractUserDetails(string path)
         {
             var inputData = System.IO.File.ReadAllText(path);
-            var userDetails = JsonConvert.DeserializeObject<List<UserDetail>>(inputData);
+            var userDetails = JsonConvert.DeserializeObject<List<swm.core.Contract.UserDetail>>(inputData);
             return userDetails;
         }
 
-        private static void ProcessNumberofGendersPerAge(IEnumerable<UserDetail> userDetails)
+        private static void ProcessNumberofGendersPerAge(IEnumerable<swm.core.Contract.UserDetail> userDetails)
         {
-            Console.WriteLine("The number of genders per age, displayed from youngest to oldest");
-            var groupedDetails = userDetails.Where(ud => ud.Gender == "M" | ud.Gender == "F").GroupBy(ud => ud.Age, ud => ud.Gender, (key, g) => new { Age = key, details = g.ToList() }).OrderBy(o => o.Age);
-            groupedDetails.ToList().ForEach(gd =>
+            var gendersPerAgeDetails = new UserDetailProcessor().ProcessNumberofGendersPerAge(userDetails);
+            gendersPerAgeDetails.ForEach(gd =>
             {
-                Console.WriteLine($"Age : {gd.Age}, Female : {gd.details.Count(g => g.Equals("F"))}, Male : {gd.details.Count(g => g.Equals("M"))}");
+                Console.WriteLine($"Age : {gd.Age}, Female : {gd.FemaleCout}, Male : {gd.MaleCount}");
             });
         }
 
-        private static void ProcessUsersByAge(IEnumerable<UserDetail> userDetails, int age)
+        private static void ProcessUsersByAge(IEnumerable<swm.core.Contract.UserDetail> userDetails, int age)
         {
             Console.WriteLine($"All the users first names who are {age}");
-            var selectedUsersByAge = userDetails.Where(ud => ud.Age == age).ToList();
-            var firstNames = new StringBuilder();
-            selectedUsersByAge.ForEach(u =>
-            {
-                firstNames.Append(u.First).Append(',');
-            });
-            ;
-            Console.WriteLine(firstNames.Remove(firstNames.Length - 1, 1).ToString());
+            var selectedUserDetail = new UserDetailProcessor().ProcessUsersByAge(userDetails, age);
+            Console.WriteLine(selectedUserDetail);
         }
 
-        private static void ProcessUserDetailsById(IEnumerable<UserDetail> userDetails, int id)
+        private static void ProcessUserDetailsById(IEnumerable<swm.core.Contract.UserDetail> userDetails, int id)
         {
             Console.WriteLine($"The users full name for id={id}");
-            var selectedUser = userDetails.SingleOrDefault(ud => ud.Id == id);
-            Console.WriteLine(selectedUser != null
-                ? $"Result : {selectedUser.First} {selectedUser.Last}"
+            var selectedUserDetail = new UserDetailProcessor().ProcessUserDetailsById(userDetails, id);
+            Console.WriteLine(selectedUserDetail != null
+                ? $"Result : {selectedUserDetail.First} {selectedUserDetail.Last}"
                 : "Result : Not found");
         }
     }
