@@ -1,4 +1,4 @@
-﻿namespace swm.core.consoleapp.Model
+﻿namespace swm.core.Contract
 {
     public class UserDetail
     {
