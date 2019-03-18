@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using swm.core.consoleapp.Model;
 
@@ -50,19 +51,24 @@ namespace swm.core.consoleapp
 
         private static void ProcessUsersByAge(IEnumerable<UserDetail> userDetails, int age)
         {
-            Console.WriteLine("All the users first names who are 23");
+            Console.WriteLine($"All the users first names who are {age}");
             var selectedUsersByAge = userDetails.Where(ud => ud.Age == age).ToList();
+            var firstNames = new StringBuilder();
             selectedUsersByAge.ForEach(u =>
             {
-                Console.WriteLine($"{u.Last}, {u.First}");
+                firstNames.Append(u.First).Append(',');
             });
+            ;
+            Console.WriteLine(firstNames.Remove(firstNames.Length - 1, 1).ToString());
         }
 
         private static void ProcessUserDetailsById(IEnumerable<UserDetail> userDetails, int id)
         {
-            Console.WriteLine("The users full name for id=42");
+            Console.WriteLine($"The users full name for id={id}");
             var selectedUser = userDetails.SingleOrDefault(ud => ud.Id == id);
-            Console.WriteLine($"Result : {selectedUser}");
+            Console.WriteLine(selectedUser != null
+                ? $"Result : {selectedUser.First} {selectedUser.Last}"
+                : "Result : Not found");
         }
     }
 }
